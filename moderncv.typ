@@ -179,3 +179,89 @@
   align(right, language),
   [#description #h(3em) #text(style: "italic", certificate)],
 )
+
+#let dots-amount = 5
+#let gray = rgb("#c0c0c0")
+#let dots(
+  amount: dots-amount,
+  total: dots-amount,
+  color: main_color,
+  spacing: 2.2pt
+) = {
+  if (amount < 0) {
+    panic("amount should be nonnegative integer")
+  }
+  if (total < 0 or amount > total) {
+    panic("total should be nonnegative integer greater than amount")
+  }
+
+  let i = 1
+
+  box(circle(
+    radius: 4pt,
+    fill: color
+  ))
+
+  while (i < amount){
+    h(spacing)
+    box(circle(
+      radius: 4pt,
+      fill: color
+    ))
+    i += 1
+  }
+
+  while (i < total){
+    h(spacing)
+    box(circle(
+      radius: 4pt,
+      fill: gray
+    ))
+    i += 1
+  }
+
+}
+
+#let max_rating = 5
+#let skill(
+  name: "",
+  rating: 5,
+  space: 1fr,
+  spacing: 2pt
+  ) = {
+
+  if (rating < 0 or rating > max_rating) {
+    panic("rating should be between 0 and max_rating inclusively")
+  }
+
+  let done = false
+  let i = 1
+
+  name
+
+  h(space)
+
+  while (not done){
+    let colour = gray
+
+    if (i <= rating){
+      colour = main_color
+    }
+
+    box(circle(
+      radius: 4pt,
+      fill: colour
+    ))
+
+    if (max_rating == i){
+      done = true
+    } else {
+      // no spacing on last
+      h(spacing)
+    }
+
+    i += 1
+  }
+
+  [\ ]
+}
