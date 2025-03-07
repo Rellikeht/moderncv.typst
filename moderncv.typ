@@ -27,9 +27,10 @@
  *
  * - `skill` and `dots`: borrowed from alta template. Used to
  */
-#import "@preview/socialhub-fa:1.0.0": *
 
-#let left_column_size = 25%
+#import "@preview/fontawesome:0.5.0": *
+
+#let left_column_size = 20%
 #let grid_column_gutter = 8pt
 
 #let main_color = rgb(147, 14, 14)
@@ -44,18 +45,16 @@
 ) = {
   set document(author: author, title: title)
   set page(numbering: none)
-  set text(
-    font: ("Latin Modern Sans", "Inria Sans"), lang: "en", fallback: true,
-  )
+  // set text(
+  //   font: ("Latin Modern Sans", "Inria Sans"), lang: "en", fallback: true,
+  // )
   show math.equation: set text(weight: 400)
 
-  /*
-                    * How headings are used:
-                    * - h1: section (colored, prominent, with colored rectangle, spans two columns)
-                    * - h2: role (bold)
-                    * - h3: place (italic)
-                    * - h4: generic heading (normal, colored)
-                    */
+  // How headings are used:
+  // - h1: section (colored, prominent, with colored rectangle, spans two columns)
+  // - h2: role (bold)
+  // - h3: place (italic)
+  // - h4: generic heading (normal, colored)
   show heading.where(level: 1): element => [
     #v(0em)
     #box(
@@ -107,11 +106,13 @@
       #set block(below: 0.5em)
 
       #if github != "" {
-        align(top)[
+        align(
+          top,
+        )[
           #box(
             height: 1em, baseline: 20%,
           )[#pad(right: 0.4em)[#image("icons/github.svg")]]
-          #link("https://github.com/" + github)[#github]
+          #link("https://github.com/" + github)[#h(0.15em)#github]
         ]
       }
 
@@ -119,8 +120,10 @@
         align(
           top,
         )[
-          // TODO svg
-          #gitlab-info(gitlab, url: "https://gitlab.com/" + gitlab)
+          #box(
+            height: 1em, baseline: 20%,
+          )[#pad(right: 0.38em)[#fa-icon("gitlab")]]
+          #link("https://github.com/" + github)[#h(0.15em)#github]
         ]
       }
 
@@ -265,6 +268,4 @@
 
     i += 1
   }
-
-  [\ ]
 }
