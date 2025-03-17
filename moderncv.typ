@@ -1,32 +1,36 @@
 /*
- * Customizations on this template:
- *
- * - headings (h1..h4)
- *
- * - `datebox` function: provides content with stacked year
- * above (big) and month below (tinier)
- *
- * - `daterange` function: two `datebox`es separated by an em dash
- *
- * - `xdot`: function, adds a trailing dot to a string only
- * if it's not already present
- *
- * - `cvgrid`: basic layout function that wraps a grid.
- * Controlled by two parameters `left_column_size` (default: 25%)
- * and `grid_column_gutter` (default: 8pt) which control the
- * left column size and the column gutter respectively.
- *
- * - `cvcol`: used to write in the rightmost column only.
- * Builds on `cvgrid`
- *
- * - `cventry`: used to write a CV entry.
- * Builds on `cvgrid`
- *
- * - `cvlangauge`: used to write a language entry.
- * Builds on `cvgrid`
- *
- * - `skill` and `dots`: borrowed from alta template. Used to
- */
+* Customizations on this template:
+*
+* - headings (h1..h4)
+*
+* - `datebox` function: provides content with stacked year
+* above (big) and month below (tinier)
+*
+* - `daterange` function: two `datebox`es separated by an em dash
+*
+* - `xdot`: function, adds a trailing dot to a string only
+* if it's not already present
+*
+* - `cvgrid`: basic layout function that wraps a grid.
+* Controlled by two parameters `left_column_size` (default: 25%)
+* and `grid_column_gutter` (default: 8pt) which control the
+* left column size and the column gutter respectively.
+*
+* - `cvcol`: used to write in the rightmost column only.
+* Builds on `cvgrid`
+*
+* - `cventry`: used to write a CV entry.
+* Builds on `cvgrid`
+*
+* - `cvlangauge`: used to write a language entry.
+* Builds on `cvgrid`
+*
+* - `dots` : show use dots to represent amount/percentage.
+*
+* - `skill` : used to visually show skills.
+* Builds on `dots`
+* Inspired by alta template.
+*/
 
 #import "@preview/fontawesome:0.5.0": *
 
@@ -75,9 +79,11 @@
     )
   ]
 
-  show heading.where(level: 4): element => block[#text(
+  show heading.where(level: 4): element => block[
+    #text(
       element.body, size: 1em, weight: 400, fill: heading_color,
-    )]
+    )
+  ]
 
   set list(
     marker: box(
@@ -167,19 +173,24 @@
 
 #let daterange(
   start: (month: "", year: []), end: (month: "", year: []),
-) = box(
-  stack(
-    dir: ltr, spacing: 0.75em, datebox(month: start.month, year: start.year),
-    [--], datebox(month: end.month, year: end.year),
-  ),
-)
+) = {
+  box(
+    stack(
+      dir: ltr, spacing: 0.75em, //
+      if start != none { datebox(month: start.month, year: start.year) },
+      if start != none and end != none { [--] } else { v(1.5em) },
+      if end != none { datebox(month: end.month, year: end.year) },
+    ),
+  )
+}
 
-#let cvgrid(..cells) = pad(
-  bottom: 0.8em,
-)[#grid(
-    columns: (left_column_size, auto), row-gutter: 0em, column-gutter: grid_column_gutter,
-    ..cells,
-  )]
+#let cvgrid(..cells) = pad(bottom: 0.8em)[
+  #grid(
+    columns: (left_column_size, auto), //
+    row-gutter: 0em, //
+    column-gutter: grid_column_gutter, ..cells,
+  )
+]
 
 #let cvcol(content) = cvgrid([], content)
 
@@ -192,22 +203,32 @@
 }
 
 #let cventry(
-  description, start: (month: "", year: ""), end: (month: "", year: ""),
-  place: "", role: [],
-) = cvgrid(align(center, daterange(start: start, end: end)), [
-  == #role
-  === #if place != "" { xdot(place) } else { place }
-], [], description)
+  description, start: (month: "", year: ""), //
+  end: (month: "", year: ""), //
+  place: "", //
+  role: [],
+) = cvgrid(
+  align(center, daterange(start: start, end: end)), [ //
+    == #role
+    === #if place != "" { xdot(place) } else { place } ], //
+  [], description,
+)
 
 #let cvlanguage(language: [], description: [], certificate: []) = cvgrid(
-  align(right, language), [#description #h(3em) #text(style: "italic", certificate)],
+  align(right, language), //
+  [#description #h(3em) #text(style: "italic", certificate)],
 )
 
 #let dots-amount = 5
-#let gray = rgb("#c0c0c0")
+#let dot_radius = 4pt
+#let dots_gray = rgb("#c0c0c0")
 #let dots(
-  amount: dots-amount, total: dots-amount, color: main_color,
-  spacing: 2.2pt,
+  amount: dots-amount, //
+  total: dots-amount, //
+  color: main_color, //
+  gray: dots_gray, //
+  radius: dot_radius, //
+  spacing: 2.2pt, //
 ) = {
   if (amount < 0) {
     panic("amount should be nonnegative integer")
@@ -218,54 +239,46 @@
     )
   }
 
+  let dot(color) = box(circle(radius: dot_radius, fill: color))
   let i = 1
-
-  box(circle(radius: 4pt, fill: color))
+  if amount == 0 {
+    dot(gray)
+  } else {
+    dot(color)
+  }
 
   while (i < amount){
     h(spacing)
-    box(circle(radius: 4pt, fill: color))
+    dot(color)
     i += 1
   }
 
   while (i < total){
     h(spacing)
-    box(circle(radius: 4pt, fill: gray))
+    dot(gray)
     i += 1
   }
 }
 
-#let max_rating = 5
-#let skill(name: "", rating: 5, space: 1fr, spacing: 2pt) = {
-  if (rating < 0 or rating > max_rating) {
-    panic(
-      "rating should be between 0 and max_rating inclusively",
-    )
-  }
+#let max_level = 5
+#let skill_circle_radius = 4pt
+#let skill_spacing = 2pt
 
-  let done = false
-  let i = 1
-
-  name
-
-  h(space)
-
-  while (not done){
-    let colour = gray
-
-    if (i <= rating) {
-      colour = main_color
-    }
-
-    box(circle(radius: 4pt, fill: colour))
-
-    if (max_rating == i) {
-      done = true
-    } else {
-      // no spacing on last
-      h(spacing)
-    }
-
-    i += 1
-  }
+#let skill(
+  name: "", //
+  level: max_level, //
+  max_level: max_level, //
+  space: 1fr, //
+  spacing: skill_spacing, //
+  circle_radius: skill_circle_radius, //
+) = {
+  box(
+    {
+      name
+      h(1fr)
+      dots(
+        amount: level, total: max_level, radius: circle_radius,
+      )
+    },
+  )
 }
