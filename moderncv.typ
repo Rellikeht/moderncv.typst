@@ -111,17 +111,6 @@
       // Contact information
       #set block(below: 0.5em)
 
-      #if github != "" {
-        align(
-          top,
-        )[
-          #box(
-            height: 1em, baseline: 20%,
-          )[#pad(right: 0.4em)[#image("icons/github.svg")]]
-          #link("https://github.com/" + github)[#h(0.15em)#github]
-        ]
-      }
-
       #if gitlab != "" {
         align(
           top,
@@ -129,6 +118,17 @@
           #box(
             height: 1em, baseline: 20%,
           )[#pad(right: 0.38em)[#fa-icon("gitlab")]]
+          #link("https://gitlab.com/" + gitlab)[#h(0.15em)#gitlab]
+        ]
+      }
+
+      #if github != "" {
+        align(
+          top,
+        )[
+          #box(
+            height: 1em, baseline: 20%,
+          )[#pad(right: 0.4em)[#image("icons/github.svg")]]
           #link("https://github.com/" + github)[#h(0.15em)#github]
         ]
       }
@@ -195,11 +195,10 @@
 #let cvcol(content) = cvgrid([], content)
 
 #let xdot(s) = {
-  if s.ends-with(".") {
-    s
-  } else {
-    s + "."
+  if type(s) == str and not s.ends-with(".") {
+    return s + "."
   }
+  s
 }
 
 #let cventry(
@@ -208,9 +207,11 @@
   place: "", //
   role: [],
 ) = cvgrid(
-  align(center, daterange(start: start, end: end)), [ //
+  align(center, daterange(start: start, end: end)), [
     == #role
-    === #if place != "" { xdot(place) } else { place } ], //
+    === #if place != "" { xdot(place) } else { place }
+    #v(0.8em)
+  ],
   [], description,
 )
 
