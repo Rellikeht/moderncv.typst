@@ -4,6 +4,7 @@
   title: "Master Frobnicator",
   author: "John Doe",
   github: "johndoe1337",
+  gitlab: "johndoe1337",
   phone: "+01 234 56 7890",
   email: "john@example.com"
 )
@@ -118,4 +119,4 @@
 
 #v(1fr)
 
-#align(center)[_(Last updated: February 2102)_]
+// #align(center)[_(Last updated: February 2102)_]
